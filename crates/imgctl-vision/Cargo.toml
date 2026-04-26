@@ -1,0 +1,13 @@
+[package]
+name = "imgctl-vision"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+imgctl-core.workspace = true
+image.workspace = true
+clap.workspace = true
+serde.workspace = true
+kamadak-exif.workspace = true

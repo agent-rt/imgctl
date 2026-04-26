@@ -1,0 +1,39 @@
+[workspace]
+resolver = "3"
+members = ["apps/*", "crates/*"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.85"
+
+[workspace.dependencies]
+imgctl-core = { path = "crates/imgctl-core" }
+imgctl-image = { path = "crates/imgctl-image" }
+imgctl-vision = { path = "crates/imgctl-vision" }
+imgctl-mermaid = { path = "crates/imgctl-mermaid" }
+
+clap = { version = "4.6.1", features = ["derive"] }
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.149"
+thiserror = "2.0.18"
+anyhow = "1.0.102"
+image = { version = "0.25.10", default-features = false, features = ["png", "jpeg", "webp", "bmp", "gif", "tiff", "ico"] }
+imageproc = "0.26.1"
+ab_glyph = "0.2.32"
+fontdb = "0.23.0"
+schemars = "1.2.1"
+kamadak-exif = "0.6.1"
+chromiumoxide = { version = "0.9.1", default-features = false }
+tokio = { version = "1.52.1", features = ["rt-multi-thread", "macros", "time", "process", "io-util", "net", "sync"] }
+futures = "0.3.32"
+resvg = "0.47.0"
+tiny-skia = "0.12.0"
+
+[profile.release]
+lto = "fat"
+codegen-units = 1
+strip = true
+panic = "abort"
+opt-level = 3

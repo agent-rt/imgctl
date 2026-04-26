@@ -1,0 +1,20 @@
+[package]
+name = "imgctl-mermaid"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+imgctl-core.workspace = true
+clap.workspace = true
+serde.workspace = true
+chromiumoxide.workspace = true
+tokio.workspace = true
+futures.workspace = true
+resvg.workspace = true
+tiny-skia.workspace = true
+fontdb.workspace = true
+
+[dev-dependencies]
+image.workspace = true

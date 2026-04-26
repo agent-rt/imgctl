@@ -1,0 +1,29 @@
+[package]
+name = "imgctl-cli"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[[bin]]
+name = "imgctl"
+path = "src/main.rs"
+
+[dependencies]
+imgctl-core.workspace = true
+imgctl-image.workspace = true
+imgctl-vision = { workspace = true, optional = true }
+imgctl-mermaid = { workspace = true, optional = true }
+anyhow.workspace = true
+clap.workspace = true
+serde.workspace = true
+
+[features]
+default = ["vision", "mermaid"]
+vision = ["dep:imgctl-vision"]
+mermaid = ["dep:imgctl-mermaid"]
+
+[dev-dependencies]
+assert_cmd = "2.2.1"
+serde_json.workspace = true
+image.workspace = true
