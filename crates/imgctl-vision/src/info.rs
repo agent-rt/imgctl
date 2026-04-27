@@ -2,8 +2,8 @@ use std::collections::HashMap;
 use std::path::Path;
 
 use clap::Args;
-use image::{ColorType, DynamicImage, GenericImageView};
 use image::imageops::FilterType;
+use image::{ColorType, DynamicImage, GenericImageView};
 use serde::Serialize;
 
 use imgctl_core::{Error, InputSource, Result};
@@ -56,8 +56,8 @@ pub fn run(args: InfoArgs) -> Result<InfoOutput> {
     let bytes = input.read_all()?;
     let size_bytes = bytes.len() as u64;
 
-    let raw_fmt = image::guess_format(&bytes)
-        .map_err(|e| Error::UnsupportedFormat(e.to_string()))?;
+    let raw_fmt =
+        image::guess_format(&bytes).map_err(|e| Error::UnsupportedFormat(e.to_string()))?;
     let img = image::load_from_memory_with_format(&bytes, raw_fmt)
         .map_err(|e| Error::Image(e.to_string()))?;
 
@@ -270,11 +270,7 @@ mod tests {
 
     #[test]
     fn dominant_colors_top_is_solid_blue() {
-        let img = DynamicImage::ImageRgba8(RgbaImage::from_pixel(
-            32,
-            32,
-            Rgba([0, 0, 255, 255]),
-        ));
+        let img = DynamicImage::ImageRgba8(RgbaImage::from_pixel(32, 32, Rgba([0, 0, 255, 255])));
         let colors = dominant_colors(&img, 3);
         assert!(!colors.is_empty());
         // Top color should be #0000FFxx pattern (allowing rounding ±1).

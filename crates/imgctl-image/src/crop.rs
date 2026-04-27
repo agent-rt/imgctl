@@ -56,15 +56,18 @@ pub fn run(args: CropArgs) -> Result<CropOutput> {
     let decoded = decode::load(&input)?;
     let img = decoded.image;
 
-    let region = Region { x: args.x, y: args.y, w: args.w, h: args.h };
-    let resolved = region.resolve(Size { w: img.width(), h: img.height() })?;
+    let region = Region {
+        x: args.x,
+        y: args.y,
+        w: args.w,
+        h: args.h,
+    };
+    let resolved = region.resolve(Size {
+        w: img.width(),
+        h: img.height(),
+    })?;
 
-    let cropped = img.crop_imm(
-        resolved.x as u32,
-        resolved.y as u32,
-        resolved.w,
-        resolved.h,
-    );
+    let cropped = img.crop_imm(resolved.x as u32, resolved.y as u32, resolved.w, resolved.h);
 
     let target_fmt = if let Some(f) = args.format {
         f

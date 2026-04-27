@@ -107,7 +107,12 @@ pub fn run(args: DiffArgs) -> Result<DiffOutput> {
         change_ratio,
         changed_regions: regions
             .iter()
-            .map(|r| RegionOut { x: r.x, y: r.y, w: r.w, h: r.h })
+            .map(|r| RegionOut {
+                x: r.x,
+                y: r.y,
+                w: r.w,
+                h: r.h,
+            })
             .collect(),
         output: written,
     })
@@ -152,10 +157,18 @@ fn find_components(mask: &[bool], w: u32, h: u32) -> Vec<InternalRegion> {
             visited[idx] = true;
             let (mut min_x, mut min_y, mut max_x, mut max_y) = (x, y, x, y);
             while let Some((cx, cy)) = queue.pop_front() {
-                if cx < min_x { min_x = cx; }
-                if cy < min_y { min_y = cy; }
-                if cx > max_x { max_x = cx; }
-                if cy > max_y { max_y = cy; }
+                if cx < min_x {
+                    min_x = cx;
+                }
+                if cy < min_y {
+                    min_y = cy;
+                }
+                if cx > max_x {
+                    max_x = cx;
+                }
+                if cy > max_y {
+                    max_y = cy;
+                }
                 for (dx, dy) in [(-1i32, 0), (1, 0), (0, -1), (0, 1)] {
                     let nx = cx as i32 + dx;
                     let ny = cy as i32 + dy;
@@ -291,7 +304,9 @@ mod tests {
         for (img, p) in [(&a, &in_a), (&b, &in_b)] {
             let dyn_img = DynamicImage::ImageRgba8(img.clone());
             let mut buf = Vec::new();
-            dyn_img.write_to(&mut std::io::Cursor::new(&mut buf), image::ImageFormat::Png).unwrap();
+            dyn_img
+                .write_to(&mut std::io::Cursor::new(&mut buf), image::ImageFormat::Png)
+                .unwrap();
             std::fs::write(p, &buf).unwrap();
         }
 
@@ -320,7 +335,9 @@ mod tests {
         for (img, p) in [(&a, &in_a), (&b, &in_b)] {
             let dyn_img = DynamicImage::ImageRgba8(img.clone());
             let mut buf = Vec::new();
-            dyn_img.write_to(&mut std::io::Cursor::new(&mut buf), image::ImageFormat::Png).unwrap();
+            dyn_img
+                .write_to(&mut std::io::Cursor::new(&mut buf), image::ImageFormat::Png)
+                .unwrap();
             std::fs::write(p, &buf).unwrap();
         }
         let err = run(DiffArgs {

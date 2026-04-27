@@ -12,10 +12,18 @@ impl ColorRgba {
         Self([r, g, b, a])
     }
 
-    pub fn r(&self) -> u8 { self.0[0] }
-    pub fn g(&self) -> u8 { self.0[1] }
-    pub fn b(&self) -> u8 { self.0[2] }
-    pub fn a(&self) -> u8 { self.0[3] }
+    pub fn r(&self) -> u8 {
+        self.0[0]
+    }
+    pub fn g(&self) -> u8 {
+        self.0[1]
+    }
+    pub fn b(&self) -> u8 {
+        self.0[2]
+    }
+    pub fn a(&self) -> u8 {
+        self.0[3]
+    }
 
     pub fn parse(input: &str) -> Result<Self, Error> {
         let s = input.strip_prefix('#').unwrap_or(input);
@@ -51,8 +59,7 @@ fn expand_nibble(s: &str) -> Result<u8, Error> {
 }
 
 fn parse_byte(s: &str) -> Result<u8, Error> {
-    u8::from_str_radix(s, 16)
-        .map_err(|_| Error::InvalidArgument(format!("invalid hex byte: {s}")))
+    u8::from_str_radix(s, 16).map_err(|_| Error::InvalidArgument(format!("invalid hex byte: {s}")))
 }
 
 impl FromStr for ColorRgba {
@@ -110,7 +117,10 @@ mod tests {
     #[test]
     fn parse_without_hash() {
         assert_eq!(ColorRgba::parse("FFFFFF").unwrap().0, [255, 255, 255, 255]);
-        assert_eq!(ColorRgba::parse("123456").unwrap().0, [0x12, 0x34, 0x56, 255]);
+        assert_eq!(
+            ColorRgba::parse("123456").unwrap().0,
+            [0x12, 0x34, 0x56, 255]
+        );
     }
 
     #[test]

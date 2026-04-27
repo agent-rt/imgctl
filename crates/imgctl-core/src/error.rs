@@ -53,14 +53,26 @@ mod tests {
 
     #[test]
     fn error_codes_stable() {
-        assert_eq!(Error::UnsupportedFormat("x".into()).code(), "UNSUPPORTED_FORMAT");
-        assert_eq!(Error::InvalidArgument("x".into()).code(), "INVALID_ARGUMENT");
+        assert_eq!(
+            Error::UnsupportedFormat("x".into()).code(),
+            "UNSUPPORTED_FORMAT"
+        );
+        assert_eq!(
+            Error::InvalidArgument("x".into()).code(),
+            "INVALID_ARGUMENT"
+        );
         assert_eq!(Error::NotFound("x".into()).code(), "NOT_FOUND");
         assert_eq!(Error::Timeout(100).code(), "TIMEOUT");
-        assert_eq!(Error::Serialization("x".into()).code(), "SERIALIZATION_ERROR");
+        assert_eq!(
+            Error::Serialization("x".into()).code(),
+            "SERIALIZATION_ERROR"
+        );
         assert_eq!(Error::Image("x".into()).code(), "IMAGE_ERROR");
         assert_eq!(Error::FormatRequired.code(), "FORMAT_REQUIRED");
-        assert_eq!(Error::ChromeConnection("x".into()).code(), "CHROME_CONNECTION");
+        assert_eq!(
+            Error::ChromeConnection("x".into()).code(),
+            "CHROME_CONNECTION"
+        );
         assert_eq!(Error::ChromeTimeout.code(), "CHROME_TIMEOUT");
         assert_eq!(Error::MermaidSyntax("x".into()).code(), "MERMAID_SYNTAX");
         assert_eq!(Error::Internal("x".into()).code(), "INTERNAL");

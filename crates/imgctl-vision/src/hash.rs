@@ -120,7 +120,9 @@ fn dhash(img: &DynamicImage) -> u64 {
 
 fn phash(img: &DynamicImage) -> u64 {
     const N: usize = 32;
-    let small = img.resize_exact(N as u32, N as u32, FilterType::Lanczos3).to_luma8();
+    let small = img
+        .resize_exact(N as u32, N as u32, FilterType::Lanczos3)
+        .to_luma8();
     let pixels: Vec<f64> = small.pixels().map(|p| f64::from(p.0[0])).collect();
     let dct = dct_2d(&pixels, N);
 

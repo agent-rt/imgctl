@@ -1,6 +1,6 @@
 use clap::{Args, ValueEnum};
-use image::{DynamicImage, Rgba, RgbaImage};
 use image::imageops;
+use image::{DynamicImage, Rgba, RgbaImage};
 use serde::Serialize;
 
 use imgctl_core::{ColorRgba, Error, InputSource, OutputSink, Result};
@@ -191,7 +191,14 @@ mod tests {
             solid(50, 100, [0, 255, 0, 255]),
             solid(80, 100, [0, 0, 255, 255]),
         ];
-        let canvas = compose(&imgs, Direction::Horizontal, 0, Align::Start, ColorRgba::rgba(255, 255, 255, 255)).unwrap();
+        let canvas = compose(
+            &imgs,
+            Direction::Horizontal,
+            0,
+            Align::Start,
+            ColorRgba::rgba(255, 255, 255, 255),
+        )
+        .unwrap();
         assert_eq!(canvas.width(), 230);
         assert_eq!(canvas.height(), 100);
     }
@@ -203,7 +210,14 @@ mod tests {
             solid(100, 100, [0, 255, 0, 255]),
             solid(100, 100, [0, 0, 255, 255]),
         ];
-        let canvas = compose(&imgs, Direction::Horizontal, 10, Align::Start, ColorRgba::rgba(255, 255, 255, 255)).unwrap();
+        let canvas = compose(
+            &imgs,
+            Direction::Horizontal,
+            10,
+            Align::Start,
+            ColorRgba::rgba(255, 255, 255, 255),
+        )
+        .unwrap();
         assert_eq!(canvas.width(), 320); // 100 + 10 + 100 + 10 + 100
     }
 
@@ -213,7 +227,14 @@ mod tests {
             solid(50, 100, [255, 0, 0, 255]),
             solid(50, 50, [0, 255, 0, 255]), // shorter
         ];
-        let canvas = compose(&imgs, Direction::Horizontal, 0, Align::Center, ColorRgba::rgba(255, 255, 255, 255)).unwrap();
+        let canvas = compose(
+            &imgs,
+            Direction::Horizontal,
+            0,
+            Align::Center,
+            ColorRgba::rgba(255, 255, 255, 255),
+        )
+        .unwrap();
         assert_eq!(canvas.width(), 100);
         assert_eq!(canvas.height(), 100);
         // Second image (green) should be centered vertically: y=25..75
@@ -229,7 +250,14 @@ mod tests {
             solid(100, 50, [255, 0, 0, 255]),
             solid(80, 50, [0, 255, 0, 255]),
         ];
-        let canvas = compose(&imgs, Direction::Vertical, 5, Align::Start, ColorRgba::rgba(0, 0, 0, 255)).unwrap();
+        let canvas = compose(
+            &imgs,
+            Direction::Vertical,
+            5,
+            Align::Start,
+            ColorRgba::rgba(0, 0, 0, 255),
+        )
+        .unwrap();
         assert_eq!(canvas.width(), 100);
         assert_eq!(canvas.height(), 105);
     }
@@ -237,7 +265,16 @@ mod tests {
     #[test]
     fn fewer_than_two_inputs_errs() {
         let imgs = vec![solid(10, 10, [255, 0, 0, 255])];
-        assert!(compose(&imgs, Direction::Horizontal, 0, Align::Start, ColorRgba::rgba(255, 255, 255, 255)).is_err());
+        assert!(
+            compose(
+                &imgs,
+                Direction::Horizontal,
+                0,
+                Align::Start,
+                ColorRgba::rgba(255, 255, 255, 255)
+            )
+            .is_err()
+        );
     }
 
     #[test]
@@ -246,7 +283,14 @@ mod tests {
             solid(50, 50, [255, 0, 0, 255]),
             solid(50, 50, [0, 0, 255, 255]),
         ];
-        let canvas = compose(&imgs, Direction::Horizontal, 10, Align::Start, ColorRgba::rgba(0, 255, 0, 255)).unwrap();
+        let canvas = compose(
+            &imgs,
+            Direction::Horizontal,
+            10,
+            Align::Start,
+            ColorRgba::rgba(0, 255, 0, 255),
+        )
+        .unwrap();
         // gap region [50..60] should be green
         let p = canvas.get_pixel(55, 25).0;
         assert_eq!(p, [0, 255, 0, 255]);

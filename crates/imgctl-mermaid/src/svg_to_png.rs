@@ -18,8 +18,8 @@ pub fn render(svg: &str, target_width: Option<u32>) -> Result<Vec<u8>> {
         ..Default::default()
     };
 
-    let tree = usvg::Tree::from_str(svg, &opt)
-        .map_err(|e| Error::Image(format!("svg parse: {e}")))?;
+    let tree =
+        usvg::Tree::from_str(svg, &opt).map_err(|e| Error::Image(format!("svg parse: {e}")))?;
 
     let size = tree.size();
     let intrinsic_w = size.width().max(1.0);

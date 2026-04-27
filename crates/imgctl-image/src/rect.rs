@@ -70,8 +70,16 @@ pub fn run(args: RectArgs) -> Result<RectOutput> {
     let decoded = decode::load(&input)?;
     let mut img = decoded.image.to_rgba8();
 
-    let region = Region { x: args.x, y: args.y, w: args.w, h: args.h };
-    let resolved = region.resolve(Size { w: img.width(), h: img.height() })?;
+    let region = Region {
+        x: args.x,
+        y: args.y,
+        w: args.w,
+        h: args.h,
+    };
+    let resolved = region.resolve(Size {
+        w: img.width(),
+        h: img.height(),
+    })?;
 
     if let Some(fill_str) = &args.fill {
         let fill_color = ColorRgba::parse(fill_str)?;
@@ -272,7 +280,10 @@ mod tests {
         let p = pixel_at(&output, 30, 30);
         // R ≈ 255 (full red mixed onto 255 → 255), G ≈ 127 (half), B ≈ 127 (half)
         assert_eq!(p[0], 255);
-        assert!(p[1] < 200, "green component should be reduced from 255: {p:?}");
+        assert!(
+            p[1] < 200,
+            "green component should be reduced from 255: {p:?}"
+        );
         assert!(p[2] < 200);
 
         let _ = std::fs::remove_file(&input);

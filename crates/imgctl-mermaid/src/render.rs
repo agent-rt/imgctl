@@ -104,9 +104,7 @@ pub async fn render_svg(
     result
 }
 
-async fn launch_browser(
-    endpoint: Option<&str>,
-) -> Result<(Browser, chromiumoxide::Handler)> {
+async fn launch_browser(endpoint: Option<&str>) -> Result<(Browser, chromiumoxide::Handler)> {
     match endpoint {
         Some(ws) => Browser::connect(ws)
             .await
@@ -122,11 +120,7 @@ async fn launch_browser(
     }
 }
 
-async fn drive_render(
-    browser: &Browser,
-    src: &str,
-    theme: MermaidTheme,
-) -> Result<String> {
+async fn drive_render(browser: &Browser, src: &str, theme: MermaidTheme) -> Result<String> {
     let html = build_html(src, theme);
 
     let page = browser

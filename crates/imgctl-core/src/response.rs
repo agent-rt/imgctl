@@ -64,7 +64,13 @@ mod tests {
 
     #[test]
     fn response_ok_serializes_with_flattened_data() {
-        let r = Response::ok(Stub { width: 800, height: 600 }, 12);
+        let r = Response::ok(
+            Stub {
+                width: 800,
+                height: 600,
+            },
+            12,
+        );
         let v = serde_json::to_value(&r).unwrap();
         assert_eq!(v["success"], true);
         assert_eq!(v["elapsed_ms"], 12);

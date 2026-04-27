@@ -30,8 +30,14 @@ fn parse_point(s: &str) -> std::result::Result<(i32, i32), String> {
     if parts.len() != 2 {
         return Err(format!("expected X,Y, got: {s}"));
     }
-    let x = parts[0].trim().parse::<i32>().map_err(|e| format!("x: {e}"))?;
-    let y = parts[1].trim().parse::<i32>().map_err(|e| format!("y: {e}"))?;
+    let x = parts[0]
+        .trim()
+        .parse::<i32>()
+        .map_err(|e| format!("x: {e}"))?;
+    let y = parts[1]
+        .trim()
+        .parse::<i32>()
+        .map_err(|e| format!("y: {e}"))?;
     Ok((x, y))
 }
 

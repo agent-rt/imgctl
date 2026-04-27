@@ -4,8 +4,22 @@ use std::time::SystemTime;
 use assert_cmd::Command;
 
 const SUBCOMMANDS: &[&str] = &[
-    "convert", "resize", "crop", "text", "arrow", "blur", "rect", "concat",
-    "annotate", "info", "diff", "hash", "slice", "map-coords", "fix", "mermaid",
+    "convert",
+    "resize",
+    "crop",
+    "text",
+    "arrow",
+    "blur",
+    "rect",
+    "concat",
+    "annotate",
+    "info",
+    "diff",
+    "hash",
+    "slice",
+    "map-coords",
+    "fix",
+    "mermaid",
 ];
 
 fn imgctl() -> Command {
@@ -46,7 +60,10 @@ fn help_lists_all_subcommands() {
     let output = imgctl().arg("--help").assert().success();
     let stdout = String::from_utf8_lossy(&output.get_output().stdout).to_string();
     for sub in SUBCOMMANDS {
-        assert!(stdout.contains(sub), "help missing subcommand `{sub}`:\n{stdout}");
+        assert!(
+            stdout.contains(sub),
+            "help missing subcommand `{sub}`:\n{stdout}"
+        );
     }
 }
 
@@ -61,7 +78,13 @@ fn version_includes_package_version() {
 fn error_path_emits_tsv() {
     // Use convert against a non-existent file to trigger an IO error response.
     let output = imgctl()
-        .args(["convert", "-i", "/tmp/__imgctl_does_not_exist__.png", "-o", "/tmp/out.png"])
+        .args([
+            "convert",
+            "-i",
+            "/tmp/__imgctl_does_not_exist__.png",
+            "-o",
+            "/tmp/out.png",
+        ])
         .assert()
         .failure()
         .code(2);
@@ -73,7 +96,14 @@ fn error_path_emits_tsv() {
 #[test]
 fn error_path_emits_json() {
     let output = imgctl()
-        .args(["convert", "-i", "/tmp/__imgctl_does_not_exist__.png", "-o", "/tmp/out.png", "--json"])
+        .args([
+            "convert",
+            "-i",
+            "/tmp/__imgctl_does_not_exist__.png",
+            "-o",
+            "/tmp/out.png",
+            "--json",
+        ])
         .assert()
         .failure()
         .code(2);
@@ -87,7 +117,14 @@ fn error_path_emits_json() {
 #[test]
 fn quiet_flag_suppresses_output() {
     let output = imgctl()
-        .args(["convert", "-i", "/tmp/__imgctl_does_not_exist__.png", "-o", "/tmp/out.png", "--quiet"])
+        .args([
+            "convert",
+            "-i",
+            "/tmp/__imgctl_does_not_exist__.png",
+            "-o",
+            "/tmp/out.png",
+            "--quiet",
+        ])
         .assert()
         .failure()
         .code(2);
@@ -103,9 +140,12 @@ fn convert_e2e_png_to_jpeg() {
 
     let result = imgctl()
         .arg("convert")
-        .arg("-i").arg(&input)
-        .arg("-o").arg(&output)
-        .arg("--quality").arg("80")
+        .arg("-i")
+        .arg(&input)
+        .arg("-o")
+        .arg(&output)
+        .arg("--quality")
+        .arg("80")
         .assert()
         .success();
     let stdout = String::from_utf8_lossy(&result.get_output().stdout).to_string();
@@ -131,13 +171,18 @@ fn convert_e2e_unsupported_extension_errs() {
 
     let result = imgctl()
         .arg("convert")
-        .arg("-i").arg(&input)
-        .arg("-o").arg(&output)
+        .arg("-i")
+        .arg(&input)
+        .arg("-o")
+        .arg(&output)
         .assert()
         .failure()
         .code(2);
     let stdout = String::from_utf8_lossy(&result.get_output().stdout).to_string();
-    assert!(stdout.contains("error.code\tUNSUPPORTED_FORMAT"), "stdout: {stdout}");
+    assert!(
+        stdout.contains("error.code\tUNSUPPORTED_FORMAT"),
+        "stdout: {stdout}"
+    );
 
     let _ = std::fs::remove_file(&input);
 }
@@ -150,11 +195,16 @@ fn resize_e2e_contain() {
 
     let result = imgctl()
         .arg("resize")
-        .arg("-i").arg(&input)
-        .arg("-o").arg(&output)
-        .arg("--width").arg("100")
-        .arg("--height").arg("100")
-        .arg("--fit").arg("contain")
+        .arg("-i")
+        .arg(&input)
+        .arg("-o")
+        .arg(&output)
+        .arg("--width")
+        .arg("100")
+        .arg("--height")
+        .arg("100")
+        .arg("--fit")
+        .arg("contain")
         .assert()
         .success();
     let stdout = String::from_utf8_lossy(&result.get_output().stdout).to_string();
@@ -174,13 +224,18 @@ fn resize_e2e_missing_dimensions_errs() {
 
     let result = imgctl()
         .arg("resize")
-        .arg("-i").arg(&input)
-        .arg("-o").arg(&output)
+        .arg("-i")
+        .arg(&input)
+        .arg("-o")
+        .arg(&output)
         .assert()
         .failure()
         .code(2);
     let stdout = String::from_utf8_lossy(&result.get_output().stdout).to_string();
-    assert!(stdout.contains("error.code\tINVALID_ARGUMENT"), "stdout: {stdout}");
+    assert!(
+        stdout.contains("error.code\tINVALID_ARGUMENT"),
+        "stdout: {stdout}"
+    );
 
     let _ = std::fs::remove_file(&input);
 }
@@ -193,12 +248,18 @@ fn crop_e2e_normal_region() {
 
     let result = imgctl()
         .arg("crop")
-        .arg("-i").arg(&input)
-        .arg("-o").arg(&output)
-        .arg("--x").arg("10")
-        .arg("--y").arg("10")
-        .arg("--w").arg("100")
-        .arg("--h").arg("100")
+        .arg("-i")
+        .arg(&input)
+        .arg("-o")
+        .arg(&output)
+        .arg("--x")
+        .arg("10")
+        .arg("--y")
+        .arg("10")
+        .arg("--w")
+        .arg("100")
+        .arg("--h")
+        .arg("100")
         .assert()
         .success();
     let stdout = String::from_utf8_lossy(&result.get_output().stdout).to_string();
@@ -218,12 +279,18 @@ fn crop_e2e_negative_coords() {
 
     let result = imgctl()
         .arg("crop")
-        .arg("-i").arg(&input)
-        .arg("-o").arg(&output)
-        .arg("--x").arg("-50")
-        .arg("--y").arg("-50")
-        .arg("--w").arg("30")
-        .arg("--h").arg("30")
+        .arg("-i")
+        .arg(&input)
+        .arg("-o")
+        .arg(&output)
+        .arg("--x")
+        .arg("-50")
+        .arg("--y")
+        .arg("-50")
+        .arg("--w")
+        .arg("30")
+        .arg("--h")
+        .arg("30")
         .assert()
         .success();
     let stdout = String::from_utf8_lossy(&result.get_output().stdout).to_string();
@@ -242,13 +309,20 @@ fn rect_e2e_stroke_only() {
 
     let result = imgctl()
         .arg("rect")
-        .arg("-i").arg(&input)
-        .arg("-o").arg(&output)
-        .arg("--x").arg("10")
-        .arg("--y").arg("10")
-        .arg("--w").arg("100")
-        .arg("--h").arg("100")
-        .arg("--color").arg("#FF0000")
+        .arg("-i")
+        .arg(&input)
+        .arg("-o")
+        .arg(&output)
+        .arg("--x")
+        .arg("10")
+        .arg("--y")
+        .arg("10")
+        .arg("--w")
+        .arg("100")
+        .arg("--h")
+        .arg("100")
+        .arg("--color")
+        .arg("#FF0000")
         .assert()
         .success();
     let stdout = String::from_utf8_lossy(&result.get_output().stdout).to_string();
@@ -268,14 +342,22 @@ fn rect_e2e_with_translucent_fill() {
 
     let result = imgctl()
         .arg("rect")
-        .arg("-i").arg(&input)
-        .arg("-o").arg(&output)
-        .arg("--x").arg("10")
-        .arg("--y").arg("10")
-        .arg("--w").arg("100")
-        .arg("--h").arg("100")
-        .arg("--color").arg("#00FF00")
-        .arg("--fill").arg("#00FF0040")
+        .arg("-i")
+        .arg(&input)
+        .arg("-o")
+        .arg(&output)
+        .arg("--x")
+        .arg("10")
+        .arg("--y")
+        .arg("10")
+        .arg("--w")
+        .arg("100")
+        .arg("--h")
+        .arg("100")
+        .arg("--color")
+        .arg("#00FF00")
+        .arg("--fill")
+        .arg("#00FF0040")
         .assert()
         .success();
     let stdout = String::from_utf8_lossy(&result.get_output().stdout).to_string();
@@ -293,13 +375,20 @@ fn text_e2e_default_font() {
 
     let result = imgctl()
         .arg("text")
-        .arg("-i").arg(&input)
-        .arg("-o").arg(&output)
-        .arg("--text").arg("Hello")
-        .arg("--x").arg("20")
-        .arg("--y").arg("20")
-        .arg("--size").arg("32")
-        .arg("--color").arg("#FF0000")
+        .arg("-i")
+        .arg(&input)
+        .arg("-o")
+        .arg(&output)
+        .arg("--text")
+        .arg("Hello")
+        .arg("--x")
+        .arg("20")
+        .arg("--y")
+        .arg("20")
+        .arg("--size")
+        .arg("32")
+        .arg("--color")
+        .arg("#FF0000")
         .assert()
         .success();
     let stdout = String::from_utf8_lossy(&result.get_output().stdout).to_string();
@@ -318,12 +407,18 @@ fn text_e2e_unknown_font_errs() {
 
     let result = imgctl()
         .arg("text")
-        .arg("-i").arg(&input)
-        .arg("-o").arg(&output)
-        .arg("--text").arg("x")
-        .arg("--x").arg("0")
-        .arg("--y").arg("0")
-        .arg("--font").arg("__not_a_real_font_anywhere__")
+        .arg("-i")
+        .arg(&input)
+        .arg("-o")
+        .arg(&output)
+        .arg("--text")
+        .arg("x")
+        .arg("--x")
+        .arg("0")
+        .arg("--y")
+        .arg("0")
+        .arg("--font")
+        .arg("__not_a_real_font_anywhere__")
         .assert()
         .failure()
         .code(2);
@@ -341,12 +436,18 @@ fn arrow_e2e_solid() {
 
     let result = imgctl()
         .arg("arrow")
-        .arg("-i").arg(&input)
-        .arg("-o").arg(&output)
-        .arg("--from").arg("10,50")
-        .arg("--to").arg("180,50")
-        .arg("--color").arg("#FF0000")
-        .arg("--width").arg("2")
+        .arg("-i")
+        .arg(&input)
+        .arg("-o")
+        .arg(&output)
+        .arg("--from")
+        .arg("10,50")
+        .arg("--to")
+        .arg("180,50")
+        .arg("--color")
+        .arg("#FF0000")
+        .arg("--width")
+        .arg("2")
         .assert()
         .success();
     let stdout = String::from_utf8_lossy(&result.get_output().stdout).to_string();
@@ -364,11 +465,16 @@ fn blur_e2e_two_regions() {
 
     let result = imgctl()
         .arg("blur")
-        .arg("-i").arg(&input)
-        .arg("-o").arg(&output)
-        .arg("--region").arg("10,10,50,50")
-        .arg("--region").arg("100,100,50,50")
-        .arg("--sigma").arg("4")
+        .arg("-i")
+        .arg(&input)
+        .arg("-o")
+        .arg(&output)
+        .arg("--region")
+        .arg("10,10,50,50")
+        .arg("--region")
+        .arg("100,100,50,50")
+        .arg("--sigma")
+        .arg("4")
         .assert()
         .success();
     let stdout = String::from_utf8_lossy(&result.get_output().stdout).to_string();
@@ -387,14 +493,20 @@ fn blur_e2e_no_region_errs() {
 
     let result = imgctl()
         .arg("blur")
-        .arg("-i").arg(&input)
-        .arg("-o").arg(&output)
-        .arg("--sigma").arg("4")
+        .arg("-i")
+        .arg(&input)
+        .arg("-o")
+        .arg(&output)
+        .arg("--sigma")
+        .arg("4")
         .assert()
         .failure()
         .code(2);
     let stdout = String::from_utf8_lossy(&result.get_output().stdout).to_string();
-    assert!(stdout.contains("error.code\tINVALID_ARGUMENT"), "stdout: {stdout}");
+    assert!(
+        stdout.contains("error.code\tINVALID_ARGUMENT"),
+        "stdout: {stdout}"
+    );
 
     let _ = std::fs::remove_file(&input);
 }
@@ -411,12 +523,18 @@ fn concat_e2e_horizontal_three() {
 
     let result = imgctl()
         .arg("concat")
-        .arg("-i").arg(&a)
-        .arg("-i").arg(&b)
-        .arg("-i").arg(&c)
-        .arg("-o").arg(&output)
-        .arg("--direction").arg("horizontal")
-        .arg("--gap").arg("10")
+        .arg("-i")
+        .arg(&a)
+        .arg("-i")
+        .arg(&b)
+        .arg("-i")
+        .arg(&c)
+        .arg("-o")
+        .arg(&output)
+        .arg("--direction")
+        .arg("horizontal")
+        .arg("--gap")
+        .arg("10")
         .assert()
         .success();
     let stdout = String::from_utf8_lossy(&result.get_output().stdout).to_string();
@@ -438,13 +556,18 @@ fn concat_e2e_single_input_errs() {
 
     let result = imgctl()
         .arg("concat")
-        .arg("-i").arg(&a)
-        .arg("-o").arg(&output)
+        .arg("-i")
+        .arg(&a)
+        .arg("-o")
+        .arg(&output)
         .assert()
         .failure()
         .code(2);
     let stdout = String::from_utf8_lossy(&result.get_output().stdout).to_string();
-    assert!(stdout.contains("error.code\tINVALID_ARGUMENT"), "stdout: {stdout}");
+    assert!(
+        stdout.contains("error.code\tINVALID_ARGUMENT"),
+        "stdout: {stdout}"
+    );
 
     let _ = std::fs::remove_file(&a);
 }
@@ -483,9 +606,12 @@ fn annotate_e2e_runs_three_ops() {
 
     let result = imgctl()
         .arg("annotate")
-        .arg("-i").arg(&input)
-        .arg("-o").arg(&output)
-        .arg("--config").arg(&config)
+        .arg("-i")
+        .arg(&input)
+        .arg("-o")
+        .arg(&output)
+        .arg("--config")
+        .arg(&config)
         .assert()
         .success();
     let stdout = String::from_utf8_lossy(&result.get_output().stdout).to_string();
@@ -507,14 +633,20 @@ fn annotate_e2e_unknown_op_type_errs() {
 
     let result = imgctl()
         .arg("annotate")
-        .arg("-i").arg(&input)
-        .arg("-o").arg(&output)
-        .arg("--config").arg(&config)
+        .arg("-i")
+        .arg(&input)
+        .arg("-o")
+        .arg(&output)
+        .arg("--config")
+        .arg(&config)
         .assert()
         .failure()
         .code(2);
     let stdout = String::from_utf8_lossy(&result.get_output().stdout).to_string();
-    assert!(stdout.contains("error.code\tINVALID_ARGUMENT"), "stdout: {stdout}");
+    assert!(
+        stdout.contains("error.code\tINVALID_ARGUMENT"),
+        "stdout: {stdout}"
+    );
 
     for p in [&input, &config] {
         let _ = std::fs::remove_file(p);
@@ -525,9 +657,12 @@ fn annotate_e2e_unknown_op_type_errs() {
 fn map_coords_e2e_2x_upscale() {
     let result = imgctl()
         .arg("map-coords")
-        .arg("--from-size").arg("1280x720")
-        .arg("--to-size").arg("2560x1440")
-        .arg("--point").arg("640,360")
+        .arg("--from-size")
+        .arg("1280x720")
+        .arg("--to-size")
+        .arg("2560x1440")
+        .arg("--point")
+        .arg("640,360")
         .assert()
         .success();
     let stdout = String::from_utf8_lossy(&result.get_output().stdout).to_string();
@@ -545,10 +680,14 @@ fn slice_e2e_2x2() {
 
     let result = imgctl()
         .arg("slice")
-        .arg("-i").arg(&input)
-        .arg("--rows").arg("2")
-        .arg("--cols").arg("2")
-        .arg("--output-dir").arg(&dir)
+        .arg("-i")
+        .arg(&input)
+        .arg("--rows")
+        .arg("2")
+        .arg("--cols")
+        .arg("2")
+        .arg("--output-dir")
+        .arg(&dir)
         .assert()
         .success();
     let stdout = String::from_utf8_lossy(&result.get_output().stdout).to_string();
@@ -566,7 +705,8 @@ fn info_e2e_solid_png() {
 
     let result = imgctl()
         .arg("info")
-        .arg("-i").arg(&input)
+        .arg("-i")
+        .arg(&input)
         .assert()
         .success();
     let stdout = String::from_utf8_lossy(&result.get_output().stdout).to_string();
@@ -598,17 +738,23 @@ fn diff_e2e_detects_changed_region() {
     for (img, p) in [(&a, &a_path), (&b, &b_path)] {
         let dyn_img = DynamicImage::ImageRgba8(img.clone());
         let mut buf = Vec::new();
-        dyn_img.write_to(&mut std::io::Cursor::new(&mut buf), image::ImageFormat::Png).unwrap();
+        dyn_img
+            .write_to(&mut std::io::Cursor::new(&mut buf), image::ImageFormat::Png)
+            .unwrap();
         std::fs::write(p, &buf).unwrap();
     }
     let _ = (&mut a,); // suppress unused-mut warning
 
     let result = imgctl()
         .arg("diff")
-        .arg("-a").arg(&a_path)
-        .arg("-b").arg(&b_path)
-        .arg("-o").arg(&diff_path)
-        .arg("--threshold").arg("0.01")
+        .arg("-a")
+        .arg(&a_path)
+        .arg("-b")
+        .arg(&b_path)
+        .arg("-o")
+        .arg(&diff_path)
+        .arg("--threshold")
+        .arg("0.01")
         .assert()
         .success();
     let stdout = String::from_utf8_lossy(&result.get_output().stdout).to_string();
@@ -628,8 +774,10 @@ fn hash_e2e_single_input() {
 
     let result = imgctl()
         .arg("hash")
-        .arg("-i").arg(&input)
-        .arg("--algo").arg("phash")
+        .arg("-i")
+        .arg(&input)
+        .arg("--algo")
+        .arg("phash")
         .assert()
         .success();
     let stdout = String::from_utf8_lossy(&result.get_output().stdout).to_string();
@@ -653,8 +801,10 @@ fn hash_e2e_compare_identical_images() {
 
     let result = imgctl()
         .arg("hash")
-        .arg("-i").arg(&input)
-        .arg("-i").arg(&input)
+        .arg("-i")
+        .arg(&input)
+        .arg("-i")
+        .arg(&input)
         .assert()
         .success();
     let stdout = String::from_utf8_lossy(&result.get_output().stdout).to_string();
@@ -674,9 +824,12 @@ fn mermaid_e2e_requires_chrome() {
 
     let result = imgctl()
         .arg("mermaid")
-        .arg("-i").arg(&mmd)
-        .arg("-o").arg(&output)
-        .arg("--format").arg("svg")
+        .arg("-i")
+        .arg(&mmd)
+        .arg("-o")
+        .arg(&output)
+        .arg("--format")
+        .arg("svg")
         .assert()
         .success();
     let stdout = String::from_utf8_lossy(&result.get_output().stdout).to_string();
@@ -694,14 +847,13 @@ fn fix_e2e_detects_extension_mismatch() {
     let png = unique_temp("misnamed.jpg");
     write_fixture_png(&png);
 
-    let result = imgctl()
-        .arg("fix")
-        .arg("-i").arg(&png)
-        .assert()
-        .success();
+    let result = imgctl().arg("fix").arg("-i").arg(&png).assert().success();
     let stdout = String::from_utf8_lossy(&result.get_output().stdout).to_string();
     assert!(stdout.contains("detected_format\tpng"), "stdout: {stdout}");
-    assert!(stdout.contains("extension_format\tjpeg"), "stdout: {stdout}");
+    assert!(
+        stdout.contains("extension_format\tjpeg"),
+        "stdout: {stdout}"
+    );
     assert!(stdout.contains("mismatch\ttrue"), "stdout: {stdout}");
 
     let _ = std::fs::remove_file(&png);
@@ -714,16 +866,23 @@ fn convert_e2e_stdio_routes_meta_to_stderr() {
 
     let result = imgctl()
         .arg("convert")
-        .arg("-i").arg(&input)
-        .arg("-o").arg("-")
-        .arg("--format").arg("jpeg")
+        .arg("-i")
+        .arg(&input)
+        .arg("-o")
+        .arg("-")
+        .arg("--format")
+        .arg("jpeg")
         .assert()
         .success();
     let stdout = result.get_output().stdout.clone();
     let stderr = String::from_utf8_lossy(&result.get_output().stderr).to_string();
 
     // Binary on stdout: should start with JPEG SOI.
-    assert!(stdout.len() > 100, "expected non-trivial JPEG bytes, got {}", stdout.len());
+    assert!(
+        stdout.len() > 100,
+        "expected non-trivial JPEG bytes, got {}",
+        stdout.len()
+    );
     assert_eq!(&stdout[0..2], &[0xFF, 0xD8], "expected JPEG SOI on stdout");
 
     // Metadata on stderr.

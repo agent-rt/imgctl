@@ -8,8 +8,14 @@ fn parse_size(s: &str) -> std::result::Result<(u32, u32), String> {
     if parts.len() != 2 {
         return Err(format!("expected WxH, got: {s}"));
     }
-    let w = parts[0].trim().parse::<u32>().map_err(|e| format!("w: {e}"))?;
-    let h = parts[1].trim().parse::<u32>().map_err(|e| format!("h: {e}"))?;
+    let w = parts[0]
+        .trim()
+        .parse::<u32>()
+        .map_err(|e| format!("w: {e}"))?;
+    let h = parts[1]
+        .trim()
+        .parse::<u32>()
+        .map_err(|e| format!("h: {e}"))?;
     Ok((w, h))
 }
 
@@ -18,8 +24,14 @@ fn parse_point(s: &str) -> std::result::Result<(i32, i32), String> {
     if parts.len() != 2 {
         return Err(format!("expected X,Y, got: {s}"));
     }
-    let x = parts[0].trim().parse::<i32>().map_err(|e| format!("x: {e}"))?;
-    let y = parts[1].trim().parse::<i32>().map_err(|e| format!("y: {e}"))?;
+    let x = parts[0]
+        .trim()
+        .parse::<i32>()
+        .map_err(|e| format!("x: {e}"))?;
+    let y = parts[1]
+        .trim()
+        .parse::<i32>()
+        .map_err(|e| format!("y: {e}"))?;
     Ok((x, y))
 }
 
@@ -56,7 +68,9 @@ pub fn run(args: MapCoordsArgs) -> Result<MapCoordsOutput> {
     let (from_w, from_h) = args.from_size;
     let (to_w, to_h) = args.to_size;
     if from_w == 0 || from_h == 0 {
-        return Err(Error::InvalidArgument("--from-size must be non-zero".into()));
+        return Err(Error::InvalidArgument(
+            "--from-size must be non-zero".into(),
+        ));
     }
     let scale_x = f64::from(to_w) / f64::from(from_w);
     let scale_y = f64::from(to_h) / f64::from(from_h);

@@ -112,13 +112,27 @@ pub enum BlurKindOp {
     Pixelate,
 }
 
-fn default_text_size() -> u32 { 24 }
-fn default_black() -> String { "#000000".into() }
-fn default_red() -> String { "#FF0000".into() }
-fn default_arrow_width() -> u32 { 2 }
-fn default_arrow_head() -> u32 { 12 }
-fn default_one() -> u32 { 1 }
-fn default_sigma() -> f32 { 8.0 }
+fn default_text_size() -> u32 {
+    24
+}
+fn default_black() -> String {
+    "#000000".into()
+}
+fn default_red() -> String {
+    "#FF0000".into()
+}
+fn default_arrow_width() -> u32 {
+    2
+}
+fn default_arrow_head() -> u32 {
+    12
+}
+fn default_one() -> u32 {
+    1
+}
+fn default_sigma() -> f32 {
+    8.0
+}
 
 #[derive(Debug, Serialize)]
 pub struct AnnotateOutput {
@@ -134,22 +148,24 @@ pub struct AnnotateOutput {
 /// Response/format pipeline — meant for `--print-schema`.
 pub fn print_schema() -> Result<()> {
     let schema = schemars::schema_for!(OperationsFile);
-    let json = serde_json::to_string_pretty(&schema)
-        .map_err(|e| Error::Serialization(e.to_string()))?;
+    let json =
+        serde_json::to_string_pretty(&schema).map_err(|e| Error::Serialization(e.to_string()))?;
     println!("{json}");
     Ok(())
 }
 
 pub fn run(args: AnnotateArgs) -> Result<AnnotateOutput> {
-    let input_path = args.input.ok_or_else(|| Error::InvalidArgument(
-        "annotate --input is required (use --print-schema to dump schema)".into(),
-    ))?;
-    let output_path = args.output.ok_or_else(|| Error::InvalidArgument(
-        "annotate --output is required".into(),
-    ))?;
-    let config_path = args.config.ok_or_else(|| Error::InvalidArgument(
-        "annotate --config is required".into(),
-    ))?;
+    let input_path = args.input.ok_or_else(|| {
+        Error::InvalidArgument(
+            "annotate --input is required (use --print-schema to dump schema)".into(),
+        )
+    })?;
+    let output_path = args
+        .output
+        .ok_or_else(|| Error::InvalidArgument("annotate --output is required".into()))?;
+    let config_path = args
+        .config
+        .ok_or_else(|| Error::InvalidArgument("annotate --config is required".into()))?;
 
     let config_bytes = if config_path == "-" {
         InputSource::Stdio.read_all()?
@@ -166,9 +182,8 @@ pub fn run(args: AnnotateArgs) -> Result<AnnotateOutput> {
 
     let ops_count = parsed.operations.len();
     for (idx, op) in parsed.operations.iter().enumerate() {
-        apply_operation(&mut img, op).map_err(|e| {
-            Error::InvalidArgument(format!("op[{idx}]: {e}"))
-        })?;
+        apply_operation(&mut img, op)
+            .map_err(|e| Error::InvalidArgument(format!("op[{idx}]: {e}")))?;
     }
 
     let dyn_img = DynamicImage::ImageRgba8(img);
@@ -199,7 +214,16 @@ pub fn run(args: AnnotateArgs) -> Result<AnnotateOutput> {
 
 fn apply_operation(img: &mut RgbaImage, op: &Operation) -> Result<()> {
     match op {
-        Operation::Text { text, x, y, size, color, align, bg, font } => {
+        Operation::Text {
+            text,
+            x,
+            y,
+            size,
+            color,
+            align,
+            bg,
+            font,
+        } => {
             let color = ColorRgba::parse(color)?;
             let bg = bg.as_deref().map(ColorRgba::parse).transpose()?;
             let font_obj = drawing::text::load_font(font.as_deref())?;
@@ -208,9 +232,26 @@ fn apply_operation(img: &mut RgbaImage, op: &Operation) -> Result<()> {
                 TextAlignOp::Center => drawing::text::TextAlign::Center,
                 TextAlignOp::Right => drawing::text::TextAlign::Right,
             };
-            drawing::text::render_text(img, text, *x, *y, *size, color, internal_align, &font_obj, bg)
+            drawing::text::render_text(
+                img,
+                text,
+                *x,
+                *y,
+                *size,
+                color,
+                internal_align,
+                &font_obj,
+                bg,
+            )
         }
-        Operation::Arrow { from, to, color, width, head_size, style } => {
+        Operation::Arrow {
+            from,
+            to,
+            color,
+            width,
+            head_size,
+            style,
+        } => {
             let color = ColorRgba::parse(color)?;
             let internal_style = match style {
                 ArrowStyleOp::Solid => drawing::arrow::ArrowStyle::Solid,
@@ -227,11 +268,15 @@ fn apply_operation(img: &mut RgbaImage, op: &Operation) -> Result<()> {
             );
             Ok(())
         }
-        Operation::Blur { region, sigma, kind } => {
+        Operation::Blur {
+            region,
+            sigma,
+            kind,
+        } => {
             if region[2] < 0 || region[3] < 0 {
-                return Err(Error::InvalidArgument(
-                    format!("blur region w/h must be non-negative: {region:?}"),
-                ));
+                return Err(Error::InvalidArgument(format!(
+                    "blur region w/h must be non-negative: {region:?}"
+                )));
             }
             let r = Region {
                 x: region[0],
@@ -239,7 +284,10 @@ fn apply_operation(img: &mut RgbaImage, op: &Operation) -> Result<()> {
                 w: region[2] as u32,
                 h: region[3] as u32,
             };
-            let resolved = r.resolve(Size { w: img.width(), h: img.height() })?;
+            let resolved = r.resolve(Size {
+                w: img.width(),
+                h: img.height(),
+            })?;
             let internal_kind = match kind {
                 BlurKindOp::Gaussian => blur::BlurType::Gaussian,
                 BlurKindOp::Pixelate => blur::BlurType::Pixelate,
@@ -247,11 +295,27 @@ fn apply_operation(img: &mut RgbaImage, op: &Operation) -> Result<()> {
             blur::process_region(img, resolved, *sigma, internal_kind);
             Ok(())
         }
-        Operation::Rect { x, y, w, h, color, width, fill } => {
+        Operation::Rect {
+            x,
+            y,
+            w,
+            h,
+            color,
+            width,
+            fill,
+        } => {
             let stroke_color = ColorRgba::parse(color)?;
             let fill_color = fill.as_deref().map(ColorRgba::parse).transpose()?;
-            let r = Region { x: *x, y: *y, w: *w, h: *h };
-            let resolved = r.resolve(Size { w: img.width(), h: img.height() })?;
+            let r = Region {
+                x: *x,
+                y: *y,
+                w: *w,
+                h: *h,
+            };
+            let resolved = r.resolve(Size {
+                w: img.width(),
+                h: img.height(),
+            })?;
             rect::draw(img, resolved, stroke_color, *width, fill_color);
             Ok(())
         }
@@ -337,7 +401,10 @@ mod tests {
     fn invalid_color_in_op_errs() {
         let mut img = RgbaImage::from_pixel(50, 50, image::Rgba([255; 4]));
         let op = Operation::Rect {
-            x: 0, y: 0, w: 10, h: 10,
+            x: 0,
+            y: 0,
+            w: 10,
+            h: 10,
             color: "not-a-color".into(),
             width: 1,
             fill: None,

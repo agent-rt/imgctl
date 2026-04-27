@@ -14,8 +14,8 @@ pub struct Decoded {
 /// the magic bytes (extension is ignored).
 pub fn load(src: &InputSource) -> Result<Decoded> {
     let bytes = src.read_all()?;
-    let raw_fmt = image::guess_format(&bytes)
-        .map_err(|e| Error::UnsupportedFormat(e.to_string()))?;
+    let raw_fmt =
+        image::guess_format(&bytes).map_err(|e| Error::UnsupportedFormat(e.to_string()))?;
     let image = image::load_from_memory_with_format(&bytes, raw_fmt)
         .map_err(|e| Error::Image(e.to_string()))?;
     let format = ImageFormat::from_image(raw_fmt)

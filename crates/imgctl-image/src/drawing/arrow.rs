@@ -154,7 +154,12 @@ fn draw_line_alpha(img: &mut RgbaImage, fx: f32, fy: f32, tx: f32, ty: f32, src:
     }
     for i in 0..=steps {
         let t = i as f32 / steps as f32;
-        plot(img, (fx + dx * t).round() as i32, (fy + dy * t).round() as i32, src);
+        plot(
+            img,
+            (fx + dx * t).round() as i32,
+            (fy + dy * t).round() as i32,
+            src,
+        );
     }
 }
 
@@ -214,31 +219,71 @@ mod tests {
     }
 
     fn count_red(img: &RgbaImage) -> usize {
-        img.pixels().filter(|p| p.0[0] > 200 && p.0[1] < 100 && p.0[2] < 100).count()
+        img.pixels()
+            .filter(|p| p.0[0] > 200 && p.0[1] < 100 && p.0[2] < 100)
+            .count()
     }
 
     #[test]
     fn solid_arrow_paints_red_along_line() {
         let mut img = fresh(100, 100);
-        draw_arrow(&mut img, (10, 50), (90, 50), ColorRgba::rgba(255, 0, 0, 255), 2, 12, ArrowStyle::Solid);
-        assert!(count_red(&img) > 50, "expected many red pixels along solid line");
+        draw_arrow(
+            &mut img,
+            (10, 50),
+            (90, 50),
+            ColorRgba::rgba(255, 0, 0, 255),
+            2,
+            12,
+            ArrowStyle::Solid,
+        );
+        assert!(
+            count_red(&img) > 50,
+            "expected many red pixels along solid line"
+        );
     }
 
     #[test]
     fn dashed_arrow_has_fewer_red_than_solid() {
         let mut s = fresh(100, 100);
         let mut d = fresh(100, 100);
-        draw_arrow(&mut s, (10, 50), (90, 50), ColorRgba::rgba(255, 0, 0, 255), 1, 12, ArrowStyle::Solid);
-        draw_arrow(&mut d, (10, 50), (90, 50), ColorRgba::rgba(255, 0, 0, 255), 1, 12, ArrowStyle::Dashed);
+        draw_arrow(
+            &mut s,
+            (10, 50),
+            (90, 50),
+            ColorRgba::rgba(255, 0, 0, 255),
+            1,
+            12,
+            ArrowStyle::Solid,
+        );
+        draw_arrow(
+            &mut d,
+            (10, 50),
+            (90, 50),
+            ColorRgba::rgba(255, 0, 0, 255),
+            1,
+            12,
+            ArrowStyle::Dashed,
+        );
         let cs = count_red(&s);
         let cd = count_red(&d);
-        assert!(cd < cs, "dashed should paint fewer red pixels: solid={cs}, dashed={cd}");
+        assert!(
+            cd < cs,
+            "dashed should paint fewer red pixels: solid={cs}, dashed={cd}"
+        );
     }
 
     #[test]
     fn arrow_head_paints_red_at_tip() {
         let mut img = fresh(100, 100);
-        draw_arrow(&mut img, (10, 50), (90, 50), ColorRgba::rgba(255, 0, 0, 255), 1, 12, ArrowStyle::Solid);
+        draw_arrow(
+            &mut img,
+            (10, 50),
+            (90, 50),
+            ColorRgba::rgba(255, 0, 0, 255),
+            1,
+            12,
+            ArrowStyle::Solid,
+        );
         // Pixel at the tip should be red.
         assert_eq!(img.get_pixel(89, 50).0[0], 255);
     }
@@ -246,16 +291,35 @@ mod tests {
     #[test]
     fn alpha_arrow_blends_with_background() {
         let mut img = fresh(100, 100);
-        draw_arrow(&mut img, (10, 50), (90, 50), ColorRgba::rgba(255, 0, 0, 128), 2, 12, ArrowStyle::Solid);
+        draw_arrow(
+            &mut img,
+            (10, 50),
+            (90, 50),
+            ColorRgba::rgba(255, 0, 0, 128),
+            2,
+            12,
+            ArrowStyle::Solid,
+        );
         // A pixel on the line should have R high, G/B reduced (blend toward red over white).
         let p = img.get_pixel(50, 50).0;
         assert_eq!(p[0], 255);
-        assert!(p[1] < 200 && p[2] < 200, "expected alpha-blended pixel: {p:?}");
+        assert!(
+            p[1] < 200 && p[2] < 200,
+            "expected alpha-blended pixel: {p:?}"
+        );
     }
 
     #[test]
     fn zero_length_arrow_no_panic() {
         let mut img = fresh(50, 50);
-        draw_arrow(&mut img, (10, 10), (10, 10), ColorRgba::rgba(255, 0, 0, 255), 1, 12, ArrowStyle::Solid);
+        draw_arrow(
+            &mut img,
+            (10, 10),
+            (10, 10),
+            ColorRgba::rgba(255, 0, 0, 255),
+            1,
+            12,
+            ArrowStyle::Solid,
+        );
     }
 }

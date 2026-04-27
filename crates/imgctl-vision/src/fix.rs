@@ -74,7 +74,8 @@ pub fn detect_format(bytes: &[u8]) -> &'static str {
     if bytes.starts_with(b"GIF87a") || bytes.starts_with(b"GIF89a") {
         return "gif";
     }
-    if bytes.starts_with(&[0x49, 0x49, 0x2A, 0x00]) || bytes.starts_with(&[0x4D, 0x4D, 0x00, 0x2A]) {
+    if bytes.starts_with(&[0x49, 0x49, 0x2A, 0x00]) || bytes.starts_with(&[0x4D, 0x4D, 0x00, 0x2A])
+    {
         return "tiff";
     }
     if bytes.starts_with(&[0x00, 0x00, 0x01, 0x00]) {
@@ -167,14 +168,23 @@ mod tests {
     fn png_bytes() -> Vec<u8> {
         let img = DynamicImage::ImageRgba8(RgbaImage::from_pixel(16, 16, Rgba([10, 20, 30, 255])));
         let mut buf = Vec::new();
-        img.write_to(&mut std::io::Cursor::new(&mut buf), image::ImageFormat::Png).unwrap();
+        img.write_to(&mut std::io::Cursor::new(&mut buf), image::ImageFormat::Png)
+            .unwrap();
         buf
     }
 
     fn jpeg_bytes() -> Vec<u8> {
-        let img = DynamicImage::ImageRgb8(image::RgbImage::from_pixel(16, 16, image::Rgb([100, 50, 200])));
+        let img = DynamicImage::ImageRgb8(image::RgbImage::from_pixel(
+            16,
+            16,
+            image::Rgb([100, 50, 200]),
+        ));
         let mut buf = Vec::new();
-        img.write_to(&mut std::io::Cursor::new(&mut buf), image::ImageFormat::Jpeg).unwrap();
+        img.write_to(
+            &mut std::io::Cursor::new(&mut buf),
+            image::ImageFormat::Jpeg,
+        )
+        .unwrap();
         buf
     }
 

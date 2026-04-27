@@ -31,8 +31,16 @@ impl Region {
         let img_w = i64::from(image.w);
         let img_h = i64::from(image.h);
 
-        let raw_x = if self.x < 0 { img_w + i64::from(self.x) } else { i64::from(self.x) };
-        let raw_y = if self.y < 0 { img_h + i64::from(self.y) } else { i64::from(self.y) };
+        let raw_x = if self.x < 0 {
+            img_w + i64::from(self.x)
+        } else {
+            i64::from(self.x)
+        };
+        let raw_y = if self.y < 0 {
+            img_h + i64::from(self.y)
+        } else {
+            i64::from(self.y)
+        };
 
         let x = raw_x.max(0).min(img_w);
         let y = raw_y.max(0).min(img_h);
@@ -68,40 +76,91 @@ mod tests {
 
     #[test]
     fn resolve_within_bounds() {
-        let r = Region { x: 10, y: 20, w: 100, h: 50 };
-        assert_eq!(r.resolve(img(200, 200)).unwrap(), Region { x: 10, y: 20, w: 100, h: 50 });
+        let r = Region {
+            x: 10,
+            y: 20,
+            w: 100,
+            h: 50,
+        };
+        assert_eq!(
+            r.resolve(img(200, 200)).unwrap(),
+            Region {
+                x: 10,
+                y: 20,
+                w: 100,
+                h: 50
+            }
+        );
     }
 
     #[test]
     fn resolve_clamps_overflow() {
-        let r = Region { x: 50, y: 50, w: 200, h: 200 };
-        assert_eq!(r.resolve(img(100, 100)).unwrap(), Region { x: 50, y: 50, w: 50, h: 50 });
+        let r = Region {
+            x: 50,
+            y: 50,
+            w: 200,
+            h: 200,
+        };
+        assert_eq!(
+            r.resolve(img(100, 100)).unwrap(),
+            Region {
+                x: 50,
+                y: 50,
+                w: 50,
+                h: 50
+            }
+        );
     }
 
     #[test]
     fn resolve_negative_origin_from_right_bottom() {
-        let r = Region { x: -50, y: -30, w: 30, h: 20 };
+        let r = Region {
+            x: -50,
+            y: -30,
+            w: 30,
+            h: 20,
+        };
         assert_eq!(
             r.resolve(img(200, 200)).unwrap(),
-            Region { x: 150, y: 170, w: 30, h: 20 }
+            Region {
+                x: 150,
+                y: 170,
+                w: 30,
+                h: 20
+            }
         );
     }
 
     #[test]
     fn resolve_zero_width_errs() {
-        let r = Region { x: 10, y: 10, w: 0, h: 50 };
+        let r = Region {
+            x: 10,
+            y: 10,
+            w: 0,
+            h: 50,
+        };
         assert!(r.resolve(img(200, 200)).is_err());
     }
 
     #[test]
     fn resolve_outside_image_errs() {
-        let r = Region { x: 500, y: 500, w: 100, h: 100 };
+        let r = Region {
+            x: 500,
+            y: 500,
+            w: 100,
+            h: 100,
+        };
         assert!(r.resolve(img(200, 200)).is_err());
     }
 
     #[test]
     fn region_serde_roundtrip() {
-        let r = Region { x: 1, y: 2, w: 3, h: 4 };
+        let r = Region {
+            x: 1,
+            y: 2,
+            w: 3,
+            h: 4,
+        };
         let json = serde_json::to_string(&r).unwrap();
         let back: Region = serde_json::from_str(&json).unwrap();
         assert_eq!(back, r);

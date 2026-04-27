@@ -164,7 +164,12 @@ mod tests {
 
     #[test]
     fn contain_preserves_aspect() {
-        let out = apply_resize(&make_image(400, 200), Some(100), Some(100), FitMode::Contain);
+        let out = apply_resize(
+            &make_image(400, 200),
+            Some(100),
+            Some(100),
+            FitMode::Contain,
+        );
         assert_eq!(out.width(), 100);
         assert_eq!(out.height(), 50);
     }
@@ -185,14 +190,24 @@ mod tests {
 
     #[test]
     fn scale_down_skips_upscale() {
-        let out = apply_resize(&make_image(100, 100), Some(200), Some(200), FitMode::ScaleDown);
+        let out = apply_resize(
+            &make_image(100, 100),
+            Some(200),
+            Some(200),
+            FitMode::ScaleDown,
+        );
         assert_eq!(out.width(), 100);
         assert_eq!(out.height(), 100);
     }
 
     #[test]
     fn scale_down_shrinks_larger_source() {
-        let out = apply_resize(&make_image(400, 200), Some(200), Some(200), FitMode::ScaleDown);
+        let out = apply_resize(
+            &make_image(400, 200),
+            Some(200),
+            Some(200),
+            FitMode::ScaleDown,
+        );
         // Falls through to Contain: ratio 0.5 → (200, 100)
         assert_eq!(out.width(), 200);
         assert_eq!(out.height(), 100);
@@ -236,7 +251,14 @@ mod tests {
         let output = unique_temp("out.png");
         write_png_fixture(&input, 400, 200);
 
-        let out = run(cli_args(&input, &output, Some(100), Some(100), FitMode::Cover)).unwrap();
+        let out = run(cli_args(
+            &input,
+            &output,
+            Some(100),
+            Some(100),
+            FitMode::Cover,
+        ))
+        .unwrap();
         assert_eq!(out.width, 100);
         assert_eq!(out.height, 100);
         assert_eq!(out.format, "png");

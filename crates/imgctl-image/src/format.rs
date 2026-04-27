@@ -78,11 +78,26 @@ mod tests {
 
     #[test]
     fn from_path_handles_extensions() {
-        assert_eq!(ImageFormat::from_path(&PathBuf::from("foo.png")), Some(ImageFormat::Png));
-        assert_eq!(ImageFormat::from_path(&PathBuf::from("foo.jpg")), Some(ImageFormat::Jpeg));
-        assert_eq!(ImageFormat::from_path(&PathBuf::from("foo.JPEG")), Some(ImageFormat::Jpeg));
-        assert_eq!(ImageFormat::from_path(&PathBuf::from("foo.tiff")), Some(ImageFormat::Tiff));
-        assert_eq!(ImageFormat::from_path(&PathBuf::from("foo.tif")), Some(ImageFormat::Tiff));
+        assert_eq!(
+            ImageFormat::from_path(&PathBuf::from("foo.png")),
+            Some(ImageFormat::Png)
+        );
+        assert_eq!(
+            ImageFormat::from_path(&PathBuf::from("foo.jpg")),
+            Some(ImageFormat::Jpeg)
+        );
+        assert_eq!(
+            ImageFormat::from_path(&PathBuf::from("foo.JPEG")),
+            Some(ImageFormat::Jpeg)
+        );
+        assert_eq!(
+            ImageFormat::from_path(&PathBuf::from("foo.tiff")),
+            Some(ImageFormat::Tiff)
+        );
+        assert_eq!(
+            ImageFormat::from_path(&PathBuf::from("foo.tif")),
+            Some(ImageFormat::Tiff)
+        );
         assert_eq!(ImageFormat::from_path(&PathBuf::from("foo.bin")), None);
         assert_eq!(ImageFormat::from_path(&PathBuf::from("noext")), None);
     }

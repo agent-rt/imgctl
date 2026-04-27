@@ -1,6 +1,6 @@
 use clap::{Args, ValueEnum};
-use image::{DynamicImage, RgbaImage};
 use image::imageops::{self, FilterType};
+use image::{DynamicImage, RgbaImage};
 use serde::Serialize;
 
 use imgctl_core::{Error, InputSource, OutputSink, Region, Result, Size};
@@ -21,10 +21,22 @@ fn parse_region(s: &str) -> std::result::Result<Region, String> {
     if parts.len() != 4 {
         return Err(format!("expected X,Y,W,H, got: {s}"));
     }
-    let x = parts[0].trim().parse::<i32>().map_err(|e| format!("x: {e}"))?;
-    let y = parts[1].trim().parse::<i32>().map_err(|e| format!("y: {e}"))?;
-    let w = parts[2].trim().parse::<u32>().map_err(|e| format!("w: {e}"))?;
-    let h = parts[3].trim().parse::<u32>().map_err(|e| format!("h: {e}"))?;
+    let x = parts[0]
+        .trim()
+        .parse::<i32>()
+        .map_err(|e| format!("x: {e}"))?;
+    let y = parts[1]
+        .trim()
+        .parse::<i32>()
+        .map_err(|e| format!("y: {e}"))?;
+    let w = parts[2]
+        .trim()
+        .parse::<u32>()
+        .map_err(|e| format!("w: {e}"))?;
+    let h = parts[3]
+        .trim()
+        .parse::<u32>()
+        .map_err(|e| format!("h: {e}"))?;
     Ok(Region { x, y, w, h })
 }
 
@@ -72,16 +84,17 @@ pub fn run(args: BlurArgs) -> Result<BlurOutput> {
         ));
     }
     if args.sigma <= 0.0 {
-        return Err(Error::InvalidArgument(
-            "blur --sigma must be > 0".into(),
-        ));
+        return Err(Error::InvalidArgument("blur --sigma must be > 0".into()));
     }
 
     let input = InputSource::from_arg(&args.input);
     let sink = OutputSink::from_arg(&args.output);
     let decoded = decode::load(&input)?;
     let mut img = decoded.image.to_rgba8();
-    let img_size = Size { w: img.width(), h: img.height() };
+    let img_size = Size {
+        w: img.width(),
+        h: img.height(),
+    };
 
     let regions_processed = args.region.len();
     for region in &args.region {
@@ -182,11 +195,21 @@ mod tests {
     fn parse_region_basic() {
         assert_eq!(
             parse_region("10,20,30,40").unwrap(),
-            Region { x: 10, y: 20, w: 30, h: 40 }
+            Region {
+                x: 10,
+                y: 20,
+                w: 30,
+                h: 40
+            }
         );
         assert_eq!(
             parse_region("-5,-5,10,10").unwrap(),
-            Region { x: -5, y: -5, w: 10, h: 10 }
+            Region {
+                x: -5,
+                y: -5,
+                w: 10,
+                h: 10
+            }
         );
     }
 
@@ -200,17 +223,30 @@ mod tests {
     #[test]
     fn gaussian_smooths_high_frequency_pattern() {
         let mut img = checkerboard(64, 64);
-        let region = Region { x: 16, y: 16, w: 32, h: 32 };
+        let region = Region {
+            x: 16,
+            y: 16,
+            w: 32,
+            h: 32,
+        };
         let pre = variance(&img, region);
         process_region(&mut img, region, 4.0, BlurType::Gaussian);
         let post = variance(&img, region);
-        assert!(post < pre, "blur should reduce variance: pre={pre}, post={post}");
+        assert!(
+            post < pre,
+            "blur should reduce variance: pre={pre}, post={post}"
+        );
     }
 
     #[test]
     fn pixelate_reduces_unique_colors() {
         let mut img = checkerboard(64, 64);
-        let region = Region { x: 16, y: 16, w: 32, h: 32 };
+        let region = Region {
+            x: 16,
+            y: 16,
+            w: 32,
+            h: 32,
+        };
         process_region(&mut img, region, 4.0, BlurType::Pixelate);
         // Pixelate: adjacent pixels in the same block share the same color.
         // Sample two pixels inside the same 8x8 block — they should match.
@@ -224,7 +260,12 @@ mod tests {
         let mut img = checkerboard(50, 50);
         // resolve will clip; if it returns an invalid region, run() would error.
         // process_region itself is given a pre-resolved region, so callers must validate.
-        let valid = Region { x: 10, y: 10, w: 20, h: 20 };
+        let valid = Region {
+            x: 10,
+            y: 10,
+            w: 20,
+            h: 20,
+        };
         process_region(&mut img, valid, 2.0, BlurType::Gaussian);
     }
 }

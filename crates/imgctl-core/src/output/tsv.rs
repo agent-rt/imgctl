@@ -94,8 +94,16 @@ mod tests {
         let doc = Doc {
             success: true,
             tiles: vec![
-                Tile { file: "a.png".into(), x: 0, y: 0 },
-                Tile { file: "b.png".into(), x: 100, y: 0 },
+                Tile {
+                    file: "a.png".into(),
+                    x: 0,
+                    y: 0,
+                },
+                Tile {
+                    file: "b.png".into(),
+                    x: 100,
+                    y: 0,
+                },
             ],
         };
         let got = render(&doc);
@@ -117,7 +125,9 @@ mod tests {
         struct E {
             msg: String,
         }
-        let e = E { msg: "line1\tcol\nline2\\path".into() };
+        let e = E {
+            msg: "line1\tcol\nline2\\path".into(),
+        };
         assert_eq!(render(&e), "msg\tline1\\tcol\\nline2\\\\path\n");
     }
 
@@ -130,7 +140,11 @@ mod tests {
             b: Option<i32>,
             c: Option<i32>,
         }
-        let n = N { a: 1, b: None, c: None };
+        let n = N {
+            a: 1,
+            b: None,
+            c: None,
+        };
         // `b` is skipped by serde; `c` becomes Null and is skipped by the TSV emitter.
         assert_eq!(render(&n), "a\t1\n");
     }

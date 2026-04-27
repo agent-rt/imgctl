@@ -19,11 +19,7 @@ pub struct EncodedInfo {
 /// Encode `img` to `fmt`, returning the encoded bytes.
 ///
 /// `quality` is clamped to 1..=100 and only affects lossy formats (JPEG today).
-pub fn encode_to_bytes(
-    img: &DynamicImage,
-    fmt: ImageFormat,
-    quality: u8,
-) -> Result<Vec<u8>> {
+pub fn encode_to_bytes(img: &DynamicImage, fmt: ImageFormat, quality: u8) -> Result<Vec<u8>> {
     let mut buf = Vec::new();
     let q = quality.clamp(1, 100);
     match fmt {
@@ -114,7 +110,10 @@ mod tests {
         let img = fixture_image();
         let bytes = encode_to_bytes(&img, ImageFormat::Png, 85).unwrap();
         // PNG magic
-        assert_eq!(&bytes[0..8], &[0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]);
+        assert_eq!(
+            &bytes[0..8],
+            &[0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]
+        );
         let back = image::load_from_memory(&bytes).unwrap();
         assert_eq!(back.width(), 64);
         assert_eq!(back.height(), 64);
@@ -125,7 +124,12 @@ mod tests {
         let img = fixture_image();
         let low = encode_to_bytes(&img, ImageFormat::Jpeg, 10).unwrap();
         let high = encode_to_bytes(&img, ImageFormat::Jpeg, 95).unwrap();
-        assert!(low.len() < high.len(), "low={} high={}", low.len(), high.len());
+        assert!(
+            low.len() < high.len(),
+            "low={} high={}",
+            low.len(),
+            high.len()
+        );
         // JPEG SOI
         assert_eq!(&low[0..2], &[0xFF, 0xD8]);
     }
@@ -153,13 +157,7 @@ mod tests {
     fn write_to_file_sink_matches_disk() {
         let img = fixture_image();
         let path = unique_temp("png");
-        let info = write(
-            &img,
-            ImageFormat::Png,
-            85,
-            &OutputSink::File(path.clone()),
-        )
-        .unwrap();
+        let info = write(&img, ImageFormat::Png, 85, &OutputSink::File(path.clone())).unwrap();
         let on_disk = std::fs::metadata(&path).unwrap().len();
         assert_eq!(info.size_bytes, on_disk);
         let _ = std::fs::remove_file(&path);
